@@ -23,6 +23,8 @@ export interface Book {
   shelfLocation: string;
   totalCopies: number;
   availableCopies: number;
+  description?: string;
+  imageUrl?: string;
 }
 
 export interface Transaction {
@@ -43,4 +45,20 @@ export interface Reservation {
   reservationDate: Date;
   expiryDate: Date;
   status: 'Active' | 'Fulfilled' | 'Cancelled' | 'Expired';
+}
+
+export interface Review {
+  id: string;
+  bookId: string;
+  memberId: string;
+  rating: number;
+  comment: string;
+  date: string | Date;
+}
+
+export interface Wishlist {
+  id: string;
+  memberId: string;
+  bookId: string;
+  addedDate: string | Date;
 }

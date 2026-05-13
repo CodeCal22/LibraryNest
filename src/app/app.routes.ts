@@ -7,6 +7,8 @@ import { MemberManagementComponent } from './components/dashboard/member-managem
 import { IssueReturnComponent } from './components/dashboard/issue-return.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { ProfileComponent } from './components/dashboard/profile.component';
+import { MyBooksComponent } from './components/dashboard/my-books.component';
+import { BookDetailComponent } from './components/dashboard/book-detail.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -19,11 +21,12 @@ export const routes: Routes = [
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
       { path: 'overview', component: OverviewComponent },
       { path: 'books', component: BookCatalogComponent },
+      { path: 'books/:id', component: BookDetailComponent },
       { path: 'members', component: MemberManagementComponent },
       { path: 'transactions', component: IssueReturnComponent },
-      // My Books can re-use books component or be separate. Pointing to catalog for simplicity, or overview.
-      { path: 'my-books', component: BookCatalogComponent },
+      { path: 'my-books', component: MyBooksComponent },
       { path: 'profile', component: ProfileComponent },
+      { path: 'profile/:id', component: ProfileComponent },
     ]
   },
   { path: '**', redirectTo: '/login' }

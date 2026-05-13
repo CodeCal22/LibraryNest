@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../../services/data.service';
 import { User, Role } from '../../models';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-member-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <div class="members-container">
       <div class="flex justify-between items-center mb-6">
@@ -43,7 +44,10 @@ import { User, Role } from '../../models';
                 </td>
                 <td>
                   <div class="flex gap-2">
-                    <button class="btn-icon" (click)="openEditModal(member)">
+                    <button class="btn-icon" [routerLink]="['/dashboard/profile', member.id]" title="View Profile">
+                      <span class="material-icons-outlined text-primary">visibility</span>
+                    </button>
+                    <button class="btn-icon" (click)="openEditModal(member)" title="Edit Member">
                       <span class="material-icons-outlined text-muted">edit</span>
                     </button>
                     <button class="btn-icon" *ngIf="member.status === 'Active'" (click)="toggleStatus(member)" title="Suspend Member">

@@ -61,12 +61,12 @@ app.get('/api/books', async (req, res) => {
 });
 
 app.post('/api/books', async (req, res) => {
-  const { isbn, title, author, publisher, category, edition, shelfLocation, totalCopies, availableCopies } = req.body;
+  const { isbn, title, author, publisher, category, edition, shelfLocation, totalCopies, availableCopies, description, imageUrl } = req.body;
   const db = await getDb();
   const id = 'b' + Date.now();
   await db.run(
-    'INSERT INTO books (id, isbn, title, author, publisher, category, edition, shelfLocation, totalCopies, availableCopies) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-    [id, isbn, title, author, publisher, category, edition, shelfLocation, totalCopies, availableCopies]
+    'INSERT INTO books (id, isbn, title, author, publisher, category, edition, shelfLocation, totalCopies, availableCopies, description, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+    [id, isbn, title, author, publisher, category, edition, shelfLocation, totalCopies, availableCopies, description, imageUrl]
   );
   const newBook = await db.get('SELECT * FROM books WHERE id = ?', [id]);
   res.json(newBook);
@@ -74,11 +74,11 @@ app.post('/api/books', async (req, res) => {
 
 app.put('/api/books/:id', async (req, res) => {
   const { id } = req.params;
-  const { isbn, title, author, publisher, category, edition, shelfLocation, totalCopies, availableCopies } = req.body;
+  const { isbn, title, author, publisher, category, edition, shelfLocation, totalCopies, availableCopies, description, imageUrl } = req.body;
   const db = await getDb();
   await db.run(
-    'UPDATE books SET isbn = ?, title = ?, author = ?, publisher = ?, category = ?, edition = ?, shelfLocation = ?, totalCopies = ?, availableCopies = ? WHERE id = ?',
-    [isbn, title, author, publisher, category, edition, shelfLocation, totalCopies, availableCopies, id]
+    'UPDATE books SET isbn = ?, title = ?, author = ?, publisher = ?, category = ?, edition = ?, shelfLocation = ?, totalCopies = ?, availableCopies = ?, description = ?, imageUrl = ? WHERE id = ?',
+    [isbn, title, author, publisher, category, edition, shelfLocation, totalCopies, availableCopies, description, imageUrl, id]
   );
   const updatedBook = await db.get('SELECT * FROM books WHERE id = ?', [id]);
   res.json(updatedBook);
@@ -163,6 +163,49 @@ app.post('/api/reservations', async (req, res) => {
   const expiry = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
   await db.run('INSERT INTO reservations (id, memberId, bookId, reservationDate, expiryDate, status) VALUES (?, ?, ?, ?, ?, ?)', [id, memberId, bookId, date, expiry, 'Active']);
   res.json({ success: true });
+});
+
+// Reviews
+app.get('/api/reviews', async (req, res) => {
+  const db = await getDb();
+  const reviews = await db.all('SELECT * FROM reviews');
+  res.json(reviews);
+});
+
+app.post('/api/reviews', async (req, res) => {
+  const { bookId, memberId, rating, comment } = req.body;
+  const db = await getDb();
+  const id = 'rev' + Date.now();
+  const date = new Date().toISOString();
+  await db.run('INSERT INTO reviews (id, bookId, memberId, rating, comment, date) VALUES (?, ?, ?, ?, ?, ?)', [id, bookId, memberId, rating, comment, date]);
+  const newReview = await db.get('SELECT * FROM reviews WHERE id = ?', [id]);
+  res.json(newReview);
+});
+
+// Wishlist
+app.get('/api/wishlist', async (req, res) => {
+  const db = await getDb();
+  const wishlist = await db.all('SELECT * FROM wishlist');
+  res.json(wishlist);
+});
+
+app.post('/api/wishlist', async (req, res) => {
+  const { memberId, bookId } = req.body;
+  const db = await getDb();
+  
+  const existing = await db.get('SELECT * FROM wishlist WHERE memberId = ? AND bookId = ?', [memberId, bookId]);
+  if (existing) {
+    // toggle off
+    await db.run('DELETE FROM wishlist WHERE id = ?', [existing.id]);
+    res.json({ action: 'removed', id: existing.id });
+  } else {
+    // toggle on
+    const id = 'w' + Date.now();
+    const addedDate = new Date().toISOString();
+    await db.run('INSERT INTO wishlist (id, memberId, bookId, addedDate) VALUES (?, ?, ?, ?)', [id, memberId, bookId, addedDate]);
+    const newItem = await db.get('SELECT * FROM wishlist WHERE id = ?', [id]);
+    res.json({ action: 'added', item: newItem });
+  }
 });
 
 app.listen(port, () => {

@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../../services/data.service';
 import { Book } from '../../models';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-book-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
     <div class="catalog-container">
       <div class="flex justify-between items-center mb-6">
@@ -36,11 +36,13 @@ import { ActivatedRoute } from '@angular/router';
 
       <div class="grid grid-cols-3 gap-6">
         <div class="card book-card" *ngFor="let book of filteredBooks()">
-          <div class="book-cover">
-            <span class="material-icons-outlined">menu_book</span>
+          <div class="book-cover cursor-pointer" [routerLink]="['/dashboard/books', book.id]" [style.backgroundImage]="book.imageUrl ? 'url(' + book.imageUrl + ')' : ''" [style.backgroundSize]="'cover'" [style.backgroundPosition]="'center'">
+            <span *ngIf="!book.imageUrl" class="material-icons-outlined">menu_book</span>
           </div>
           <div class="book-info">
-            <h3 class="book-title">{{ book.title }}</h3>
+            <a [routerLink]="['/dashboard/books', book.id]" class="text-main no-underline hover:text-primary">
+              <h3 class="book-title">{{ book.title }}</h3>
+            </a>
             <p class="book-author text-muted">{{ book.author }}</p>
             <div class="flex justify-between items-center mt-4">
               <span class="badge" [ngClass]="{'badge-success': book.availableCopies > 0, 'badge-error': book.availableCopies === 0}">
@@ -111,6 +113,14 @@ import { ActivatedRoute } from '@angular/router';
               <div class="form-group">
                 <label>Available Copies</label>
                 <input type="number" name="availableCopies" [(ngModel)]="currentBook.availableCopies" required min="0">
+              </div>
+              <div class="form-group md:col-span-2">
+                <label>Description</label>
+                <textarea name="description" [(ngModel)]="currentBook.description" rows="3" placeholder="Book description"></textarea>
+              </div>
+              <div class="form-group md:col-span-2">
+                <label>Image URL</label>
+                <input type="text" name="imageUrl" [(ngModel)]="currentBook.imageUrl" placeholder="https://example.com/cover.jpg">
               </div>
             </div>
 

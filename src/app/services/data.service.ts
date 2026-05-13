@@ -1,6 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { User, Book, Transaction, Reservation } from '../models';
+import { User, Book, Transaction, Reservation, Review, Wishlist } from '../models';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable({
@@ -14,6 +14,8 @@ export class DataService {
   books = signal<Book[]>([]);
   transactions = signal<Transaction[]>([]);
   reservations = signal<Reservation[]>([]);
+  reviews = signal<Review[]>([]);
+  wishlist = signal<Wishlist[]>([]);
   currentUser = signal<User | null>(null);
 
   constructor() {
@@ -22,15 +24,19 @@ export class DataService {
 
   async loadInitialData() {
     try {
-      const [users, books, txs, resvs] = await Promise.all([
+      const [users, books, txs, resvs, revs, wlist] = await Promise.all([
         firstValueFrom(this.http.get<User[]>(`${this.apiUrl}/users`)),
         firstValueFrom(this.http.get<Book[]>(`${this.apiUrl}/books`)),
         firstValueFrom(this.http.get<any[]>(`${this.apiUrl}/transactions`)),
-        firstValueFrom(this.http.get<Reservation[]>(`${this.apiUrl}/reservations`))
+        firstValueFrom(this.http.get<Reservation[]>(`${this.apiUrl}/reservations`)),
+        firstValueFrom(this.http.get<Review[]>(`${this.apiUrl}/reviews`)),
+        firstValueFrom(this.http.get<Wishlist[]>(`${this.apiUrl}/wishlist`))
       ]);
       
       this.users.set(users);
       this.books.set(books);
+      this.reviews.set(revs);
+      this.wishlist.set(wlist);
       
       // Map SQLite date strings back to Date objects
       this.transactions.set(txs.map(t => ({
@@ -124,6 +130,22 @@ export class DataService {
       await this.loadInitialData();
     } catch (e) {
       console.error(e);
+    }
+  }
+
+  // Reviews
+  async addReview(review: Omit<Review, 'id' | 'date'>) {
+    const newReview = await firstValueFrom(this.http.post<Review>(`${this.apiUrl}/reviews`, review));
+    this.reviews.update(reviews => [...reviews, newReview]);
+  }
+
+  // Wishlist
+  async toggleWishlist(memberId: string, bookId: string) {
+    const res = await firstValueFrom(this.http.post<{action: string, id?: string, item?: Wishlist}>(`${this.apiUrl}/wishlist`, { memberId, bookId }));
+    if (res.action === 'added' && res.item) {
+      this.wishlist.update(w => [...w, res.item!]);
+    } else if (res.action === 'removed' && res.id) {
+      this.wishlist.update(w => w.filter(i => i.id !== res.id));
     }
   }
 }

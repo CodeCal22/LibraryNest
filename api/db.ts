@@ -65,7 +65,30 @@ async function initDb(db: Database<sqlite3.Database, sqlite3.Statement>) {
       FOREIGN KEY(memberId) REFERENCES users(id),
       FOREIGN KEY(bookId) REFERENCES books(id)
     );
+
+    CREATE TABLE IF NOT EXISTS reviews (
+      id TEXT PRIMARY KEY,
+      bookId TEXT,
+      memberId TEXT,
+      rating INTEGER,
+      comment TEXT,
+      date TEXT,
+      FOREIGN KEY(bookId) REFERENCES books(id),
+      FOREIGN KEY(memberId) REFERENCES users(id)
+    );
+    CREATE TABLE IF NOT EXISTS wishlist (
+      id TEXT PRIMARY KEY,
+      memberId TEXT,
+      bookId TEXT,
+      addedDate TEXT,
+      FOREIGN KEY(memberId) REFERENCES users(id),
+      FOREIGN KEY(bookId) REFERENCES books(id)
+    );
   `);
+
+  // Safely add columns to books if they don't exist
+  try { await db.exec('ALTER TABLE books ADD COLUMN description TEXT;'); } catch (e) {}
+  try { await db.exec('ALTER TABLE books ADD COLUMN imageUrl TEXT;'); } catch (e) {}
 
   // Seed data if empty
   const userCount = await db.get('SELECT COUNT(*) as count FROM users');
@@ -77,10 +100,10 @@ async function initDb(db: Database<sqlite3.Database, sqlite3.Statement>) {
     await insertUser.run('u3', 'member1', 'password', 'John Doe', 'Member', 'Active');
     await insertUser.finalize();
 
-    const insertBook = await db.prepare('INSERT INTO books (id, isbn, title, author, publisher, category, edition, shelfLocation, totalCopies, availableCopies) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-    await insertBook.run('b1', '978-0132350884', 'Clean Code', 'Robert C. Martin', 'Prentice Hall', 'Programming', '1st', 'A1', 5, 4);
-    await insertBook.run('b2', '978-0201633610', 'Design Patterns', 'Erich Gamma', 'Addison-Wesley', 'Programming', '1st', 'A2', 3, 3);
-    await insertBook.run('b3', '978-1449331818', 'Learning JavaScript Design Patterns', 'Addy Osmani', 'OReilly', 'Programming', '1st', 'A3', 2, 0);
+    const insertBook = await db.prepare('INSERT INTO books (id, isbn, title, author, publisher, category, edition, shelfLocation, totalCopies, availableCopies, description, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    await insertBook.run('b1', '978-0132350884', 'Clean Code', 'Robert C. Martin', 'Prentice Hall', 'Programming', '1st', 'A1', 5, 4, 'A Handbook of Agile Software Craftsmanship', '');
+    await insertBook.run('b2', '978-0201633610', 'Design Patterns', 'Erich Gamma', 'Addison-Wesley', 'Programming', '1st', 'A2', 3, 3, 'Elements of Reusable Object-Oriented Software', '');
+    await insertBook.run('b3', '978-1449331818', 'Learning JavaScript Design Patterns', 'Addy Osmani', 'OReilly', 'Programming', '1st', 'A3', 2, 0, 'A JavaScript and jQuery Developers Guide', '');
     await insertBook.finalize();
 
     const insertTx = await db.prepare('INSERT INTO transactions (id, memberId, bookId, issueDate, dueDate, fineAmount, status) VALUES (?, ?, ?, ?, ?, ?, ?)');

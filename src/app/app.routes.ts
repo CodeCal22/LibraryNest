@@ -1,3 +1,30 @@
 import { Routes } from '@angular/router';
+import { LoginComponent } from './components/login/login.component';
+import { DashboardLayoutComponent } from './components/dashboard/dashboard-layout.component';
+import { OverviewComponent } from './components/dashboard/overview.component';
+import { BookCatalogComponent } from './components/dashboard/book-catalog.component';
+import { MemberManagementComponent } from './components/dashboard/member-management.component';
+import { IssueReturnComponent } from './components/dashboard/issue-return.component';
+import { SignupComponent } from './components/signup/signup.component';
+import { ProfileComponent } from './components/dashboard/profile.component';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { path: 'signup', component: SignupComponent },
+  { 
+    path: 'dashboard', 
+    component: DashboardLayoutComponent,
+    children: [
+      { path: '', redirectTo: 'overview', pathMatch: 'full' },
+      { path: 'overview', component: OverviewComponent },
+      { path: 'books', component: BookCatalogComponent },
+      { path: 'members', component: MemberManagementComponent },
+      { path: 'transactions', component: IssueReturnComponent },
+      // My Books can re-use books component or be separate. Pointing to catalog for simplicity, or overview.
+      { path: 'my-books', component: BookCatalogComponent },
+      { path: 'profile', component: ProfileComponent },
+    ]
+  },
+  { path: '**', redirectTo: '/login' }
+];

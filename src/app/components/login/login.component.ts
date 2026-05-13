@@ -12,8 +12,8 @@ import { DataService } from '../../services/data.service';
     <div class="login-wrapper">
       <div class="login-card glass animate-fade-in">
         <div class="login-header">
-          <span class="material-icons-outlined login-icon text-gradient">local_library</span>
-          <h1 class="text-gradient">Nexus LMS</h1>
+          <span class="material-icons-outlined login-icon text-gradient">account_balance</span>
+          <h1 class="text-gradient">Lexora Archives</h1>
           <p>Login to access the library system</p>
         </div>
 
@@ -25,7 +25,12 @@ import { DataService } from '../../services/data.service';
 
           <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" [(ngModel)]="password" required placeholder="Enter your password (e.g. password)">
+            <div style="position: relative;">
+              <input [type]="showPassword ? 'text' : 'password'" id="password" name="password" [(ngModel)]="password" required placeholder="Enter your password (e.g. password)" style="padding-right: 2.5rem; width: 100%;">
+              <button type="button" class="btn-icon" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: transparent; border: none; padding: 0; display: flex;" (click)="showPassword = !showPassword">
+                <span class="material-icons-outlined text-muted" style="font-size: 1.25rem;">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
           </div>
 
           <div *ngIf="error" class="error-message">
@@ -58,7 +63,7 @@ import { DataService } from '../../services/data.service';
       max-width: 420px;
       padding: 3rem 2.5rem;
       border-radius: 1.5rem;
-      box-shadow: var(--shadow-lg), 0 0 40px rgba(139, 92, 246, 0.1);
+      box-shadow: var(--shadow-lg), 0 0 40px rgba(212, 175, 55, 0.1);
     }
     .login-header {
       text-align: center;
@@ -107,6 +112,7 @@ export class LoginComponent {
   username = '';
   password = '';
   error = '';
+  showPassword = false;
 
   private router = inject(Router);
   private dataService = inject(DataService);

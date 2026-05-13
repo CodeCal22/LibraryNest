@@ -13,8 +13,8 @@ import { DataService } from '../../services/data.service';
       <!-- Top Navbar -->
       <header class="navbar">
         <div class="navbar-brand">
-          <span class="material-icons-outlined text-gradient" style="font-size: 2rem;">local_library</span>
-          <h2 class="text-gradient" style="margin: 0; font-size: 1.5rem;">Nexus</h2>
+          <span class="material-icons-outlined text-gradient" style="font-size: 2rem;">account_balance</span>
+          <h2 class="text-gradient" style="margin: 0; font-size: 1.5rem;">Lexora Archives</h2>
         </div>
 
         <nav class="navbar-links">
@@ -85,7 +85,7 @@ export class DashboardLayoutComponent implements OnInit {
 
   ngOnInit() {
     // Load theme preference from localStorage if it exists
-    const savedTheme = localStorage.getItem('nexus-theme');
+    const savedTheme = localStorage.getItem('lexora-theme');
     if (savedTheme) {
       this.isDarkTheme = savedTheme === 'dark';
     } else {
@@ -97,7 +97,7 @@ export class DashboardLayoutComponent implements OnInit {
 
   toggleTheme() {
     this.isDarkTheme = !this.isDarkTheme;
-    localStorage.setItem('nexus-theme', this.isDarkTheme ? 'dark' : 'light');
+    localStorage.setItem('lexora-theme', this.isDarkTheme ? 'dark' : 'light');
     this.applyTheme();
   }
 

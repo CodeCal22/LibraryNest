@@ -26,9 +26,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
           <div class="w-48">
             <select [(ngModel)]="categoryFilter" (change)="updateSearch()">
               <option value="">All Categories</option>
-              <option value="Programming">Programming</option>
-              <option value="Fiction">Fiction</option>
-              <option value="Science">Science</option>
+              <option *ngFor="let cat of categories()" [value]="cat">{{ cat }}</option>
             </select>
           </div>
         </div>
@@ -91,12 +89,10 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
               </div>
               <div class="form-group">
                 <label>Category</label>
-                <select name="category" [(ngModel)]="currentBook.category" required>
-                  <option value="Programming">Programming</option>
-                  <option value="Fiction">Fiction</option>
-                  <option value="Science">Science</option>
-                  <option value="Other">Other</option>
-                </select>
+                <input type="text" name="category" [(ngModel)]="currentBook.category" list="categoryList" required placeholder="Select or type new category">
+                <datalist id="categoryList">
+                  <option *ngFor="let cat of categories()" [value]="cat"></option>
+                </datalist>
               </div>
               <div class="form-group">
                 <label>Edition</label>
@@ -207,6 +203,12 @@ export class BookCatalogComponent implements OnInit {
       }
     });
   }
+
+  categories = computed(() => {
+    const books = this.dataService.books();
+    const cats = new Set(books.map(b => b.category).filter(Boolean));
+    return Array.from(cats).sort();
+  });
 
   filteredBooks = computed(() => {
     let books = this.dataService.books();

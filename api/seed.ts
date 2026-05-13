@@ -97,19 +97,41 @@ async function seed() {
   }
   await insertReview.finalize();
 
-  // Transactions (Borrowing History)
+  // Transactions (Borrowing History) ensuring all reviewers have borrowed the book
   const transactions = [
     { id: 't2', memberId: 'u4', bookId: 'b4', issueDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString(), returnDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), fineAmount: 30, status: 'Returned' },
-    { id: 't3', memberId: 'u5', bookId: 'b5', issueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() + 9 * 24 * 60 * 60 * 1000).toISOString(), fineAmount: 0, status: 'Issued' },
-    { id: 't4', memberId: 'u4', bookId: 'b9', issueDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000).toISOString(), fineAmount: 0, status: 'Issued' },
-    { id: 't5', memberId: 'u6', bookId: 'b7', issueDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), fineAmount: 0, status: 'Issued' }, // Overdue
+    { id: 't3', memberId: 'u5', bookId: 'b5', issueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() + 9 * 24 * 60 * 60 * 1000).toISOString(), returnDate: null, fineAmount: 0, status: 'Issued' },
+    { id: 't4', memberId: 'u4', bookId: 'b9', issueDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000).toISOString(), returnDate: null, fineAmount: 0, status: 'Issued' },
+    { id: 't5', memberId: 'u6', bookId: 'b7', issueDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), returnDate: null, fineAmount: 0, status: 'Issued' }, // Overdue
+    // Match reviews to transactions
+    { id: 'tx_r2', memberId: 'u5', bookId: 'b4', issueDate: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() - 26 * 24 * 60 * 60 * 1000).toISOString(), returnDate: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString(), fineAmount: 0, status: 'Returned' },
+    { id: 'tx_r3', memberId: 'u6', bookId: 'b5', issueDate: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(), returnDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(), fineAmount: 5, status: 'Returned' },
+    { id: 'tx_r4', memberId: 'u4', bookId: 'b5', issueDate: new Date(Date.now() - 50 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() - 36 * 24 * 60 * 60 * 1000).toISOString(), returnDate: new Date(Date.now() - 36 * 24 * 60 * 60 * 1000).toISOString(), fineAmount: 0, status: 'Returned' },
+    { id: 'tx_r5', memberId: 'u7', bookId: 'b6', issueDate: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), returnDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), fineAmount: 0, status: 'Returned' },
+    { id: 'tx_r6', memberId: 'u8', bookId: 'b7', issueDate: new Date(Date.now() - 22 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(), returnDate: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(), fineAmount: 0, status: 'Returned' },
+    { id: 'tx_r8', memberId: 'u5', bookId: 'b10', issueDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), returnDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), fineAmount: 0, status: 'Returned' },
+    { id: 'tx_r9', memberId: 'u6', bookId: 'b11', issueDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(), dueDate: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(), returnDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), fineAmount: 5, status: 'Returned' }
   ];
 
   const insertTx = await db.prepare('INSERT OR IGNORE INTO transactions (id, memberId, bookId, issueDate, dueDate, returnDate, fineAmount, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
   for (const t of transactions) {
-    await insertTx.run(t.id, t.memberId, t.bookId, t.issueDate, t.dueDate, t.returnDate || null, t.fineAmount, t.status);
+    await insertTx.run(t.id, t.memberId, t.bookId, t.issueDate, t.dueDate, t.returnDate, t.fineAmount, t.status);
   }
   await insertTx.finalize();
+
+  // Wishlist
+  const wishlists = [
+    { id: 'w1', memberId: 'u4', bookId: 'b6', addedDate: new Date().toISOString() },
+    { id: 'w2', memberId: 'u4', bookId: 'b8', addedDate: new Date().toISOString() },
+    { id: 'w3', memberId: 'u5', bookId: 'b9', addedDate: new Date().toISOString() },
+    { id: 'w4', memberId: 'u6', bookId: 'b4', addedDate: new Date().toISOString() }
+  ];
+
+  const insertWishlist = await db.prepare('INSERT OR IGNORE INTO wishlist (id, memberId, bookId, addedDate) VALUES (?, ?, ?, ?)');
+  for (const w of wishlists) {
+    await insertWishlist.run(w.id, w.memberId, w.bookId, w.addedDate);
+  }
+  await insertWishlist.finalize();
 
   console.log('Seed completed successfully!');
 }

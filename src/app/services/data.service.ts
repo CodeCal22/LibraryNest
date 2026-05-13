@@ -20,6 +20,12 @@ export class DataService {
 
   constructor() {
     this.loadInitialData();
+    const savedUser = localStorage.getItem('lexora-user');
+    if (savedUser) {
+      try {
+        this.currentUser.set(JSON.parse(savedUser));
+      } catch (e) {}
+    }
   }
 
   async loadInitialData() {
@@ -60,6 +66,7 @@ export class DataService {
     try {
       const user = await firstValueFrom(this.http.post<User>(`${this.apiUrl}/login`, { username, password }));
       this.currentUser.set(user);
+      localStorage.setItem('lexora-user', JSON.stringify(user));
       return true;
     } catch (e) {
       return false;
@@ -68,6 +75,7 @@ export class DataService {
 
   logout() {
     this.currentUser.set(null);
+    localStorage.removeItem('lexora-user');
   }
 
   // Member Management

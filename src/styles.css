@@ -14,10 +14,10 @@
   --border-color: #E2E8F0;
   
   /* Accents */
-  --accent-primary: #8B5CF6;
-  --accent-secondary: #EC4899;
+  --accent-primary: #D4AF37;
+  --accent-secondary: #B45309;
   --accent-gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  --accent-gradient-hover: linear-gradient(135deg, #9C72F7, #EE61A7);
+  --accent-gradient-hover: linear-gradient(135deg, #FCD34D, #D97706);
   
   /* Status Colors */
   --status-success: #10B981;
@@ -29,7 +29,7 @@
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
-  --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.2);
+  --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.2);
   
   /* Animation */
   --transition-fast: 0.15s ease-in-out;
@@ -52,7 +52,7 @@
   --border-color: rgba(255, 255, 255, 0.08);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
-  --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.4);
+  --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.4);
 }
 
 * {
@@ -103,7 +103,7 @@ input, select, textarea {
 
 input:focus, select:focus, textarea:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
 }
 
 input::placeholder, textarea::placeholder {
@@ -141,7 +141,7 @@ label {
 .btn-primary {
   background: var(--accent-gradient);
   color: white;
-  box-shadow: 0 4px 10px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
 }
 
 .btn-primary:hover {
@@ -201,7 +201,7 @@ label {
 .card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
-  border-color: rgba(139, 92, 246, 0.3);
+  border-color: rgba(212, 175, 55, 0.3);
 }
 
 /* Tables */
@@ -417,7 +417,7 @@ tbody tr:hover {
 
 .search-bar:focus-within {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
 }
 
 .search-bar input {

@@ -26,6 +26,7 @@ import { RouterModule } from '@angular/router';
                 <th>ID</th>
                 <th>Name</th>
                 <th>Username</th>
+                <th>Password</th>
                 <th>Role</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -36,6 +37,14 @@ import { RouterModule } from '@angular/router';
                 <td>#{{ member.id }}</td>
                 <td class="font-bold">{{ member.name }}</td>
                 <td>{{ member.username }}</td>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono text-sm bg-black/5 px-2 py-1 rounded" style="letter-spacing: {{ visiblePasswords[member.id] ? 'normal' : '2px' }}">{{ visiblePasswords[member.id] ? member.password : '••••••••' }}</span>
+                    <button class="btn-icon" style="padding: 2px;" (click)="togglePassword(member.id)" title="Toggle Password">
+                      <span class="material-icons-outlined text-muted" style="font-size: 16px;">{{ visiblePasswords[member.id] ? 'visibility_off' : 'visibility' }}</span>
+                    </button>
+                  </div>
+                </td>
                 <td>{{ member.role }}</td>
                 <td>
                   <span class="badge" [ngClass]="{'badge-success': member.status === 'Active', 'badge-error': member.status === 'Suspended'}">
@@ -151,8 +160,13 @@ export class MemberManagementComponent {
   showModal = signal(false);
   isEditing = signal(false);
   shouldUpdatePassword = false;
+  visiblePasswords: Record<string, boolean> = {};
   
   currentMember: Partial<User> = {};
+
+  togglePassword(id: string) {
+    this.visiblePasswords[id] = !this.visiblePasswords[id];
+  }
 
   updatePassword() {
     return this.shouldUpdatePassword;

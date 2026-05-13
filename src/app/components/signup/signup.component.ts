@@ -12,9 +12,9 @@ import { DataService } from '../../services/data.service';
     <div class="login-wrapper">
       <div class="login-card glass animate-fade-in">
         <div class="login-header">
-          <span class="material-icons-outlined login-icon text-gradient">person_add</span>
-          <h1 class="text-gradient">Join Nexus</h1>
-          <p>Create your library account</p>
+          <span class="material-icons-outlined login-icon text-gradient">account_balance</span>
+          <h1 class="text-gradient">Join Lexora</h1>
+          <p>Create your archives account</p>
         </div>
 
         <form (ngSubmit)="onSubmit()" #signupForm="ngForm">
@@ -68,7 +68,7 @@ import { DataService } from '../../services/data.service';
       max-width: 420px;
       padding: 3rem 2.5rem;
       border-radius: 1.5rem;
-      box-shadow: var(--shadow-lg), 0 0 40px rgba(139, 92, 246, 0.1);
+      box-shadow: var(--shadow-lg), 0 0 40px rgba(212, 175, 55, 0.1);
     }
     .login-header {
       text-align: center;

@@ -77,7 +77,7 @@ type Tab = 'overview' | 'borrowed' | 'history' | 'reviews' | 'wishlist' | 'setti
             </div>
             <div class="stat-card glass">
               <span class="material-icons-outlined stat-icon text-error">money_off</span>
-              <div class="stat-value">\${{ stats().totalFines }}</div>
+              <div class="stat-value">₹{{ stats().totalFines }}</div>
               <div class="stat-label">Total Fines Paid</div>
             </div>
           </div>
@@ -197,7 +197,7 @@ type Tab = 'overview' | 'borrowed' | 'history' | 'reviews' | 'wishlist' | 'setti
                   <td class="p-4 text-sm">{{ item.transaction.issueDate | date:'shortDate' }}</td>
                   <td class="p-4 text-sm">{{ item.transaction.returnDate | date:'shortDate' }}</td>
                   <td class="p-4 text-sm font-medium" [ngClass]="{'text-status-error': item.transaction.fineAmount > 0, 'text-status-success': item.transaction.fineAmount === 0}">
-                    {{ item.transaction.fineAmount > 0 ? '$' + item.transaction.fineAmount : 'None' }}
+                    {{ item.transaction.fineAmount > 0 ? '₹' + item.transaction.fineAmount : 'None' }}
                   </td>
                 </tr>
               </tbody>
@@ -717,6 +717,13 @@ export class ProfileComponent implements OnInit {
     
     const updatedUser = { ...this.user, ...this.editUser };
     if (this.editPassword) {
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+      if (!passwordRegex.test(this.editPassword)) {
+        this.message = 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.';
+        this.isError = true;
+        this.isLoading = false;
+        return;
+      }
       updatedUser.password = this.editPassword;
     }
 

@@ -50,7 +50,7 @@ export class DataService {
       const unpaidTxs = txs.filter(t => t.memberId === user.id && t.status === 'Returned' && t.fineAmount > 0);
       if (unpaidTxs.length > 0) {
         const totalFines = unpaidTxs.reduce((sum, t) => sum + t.fineAmount, 0);
-        notifs.push({ type: 'warning', icon: 'money_off', message: `You have $${totalFines} in unpaid fines from previous overdue books.`, time: 'Action Required' });
+        notifs.push({ type: 'warning', icon: 'money_off', message: `You have ₹${totalFines} in unpaid fines from previous overdue books.`, time: 'Action Required' });
       }
     }
 

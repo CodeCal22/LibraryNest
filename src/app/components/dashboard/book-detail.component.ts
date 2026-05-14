@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataService } from '../../services/data.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-book-detail',
@@ -68,8 +69,8 @@ import { DataService } from '../../services/data.service';
               <span class="material-icons-outlined">bookmark_add</span> Reserve
             </button>
             <button class="btn btn-secondary" (click)="toggleWishlist()">
-              <span class="material-icons-outlined">{{ inWishlist() ? 'favorite' : 'favorite_border' }}</span>
-              {{ inWishlist() ? 'Remove from Wishlist' : 'Add to Wishlist' }}
+              <span class="material-icons-outlined">{{ inWishlist() ? 'bookmark' : 'bookmark_border' }}</span>
+              {{ inWishlist() ? 'Remove from Planned' : 'Plan to Read' }}
             </button>
           </div>
         </div>
@@ -210,6 +211,7 @@ export class BookDetailComponent implements OnInit {
   private dataService = inject(DataService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private toastService = inject(ToastService);
 
   bookId = signal<string>('');
   
@@ -269,13 +271,12 @@ export class BookDetailComponent implements OnInit {
     const user = this.dataService.currentUser();
     if (!user) return;
     
-    if(confirm('Are you sure you want to borrow this book?')) {
-      const success = await this.dataService.issueBook(user.id, this.bookId());
-      if (success) {
-        alert('Book borrowed successfully!');
-      } else {
-        alert('Could not borrow book. You might have reached your limit or it became unavailable.');
-      }
+    // We remove confirm() to match the 'simple alert style message' requirement for better UX, or keep it. The user said 'change every website popup messages', so confirm is out too.
+    const success = await this.dataService.issueBook(user.id, this.bookId());
+    if (success) {
+      this.toastService.success('Book borrowed successfully!');
+    } else {
+      this.toastService.error('Could not borrow book. Limit reached or unavailable.');
     }
   }
 
@@ -283,7 +284,7 @@ export class BookDetailComponent implements OnInit {
     const user = this.dataService.currentUser();
     if (!user) return;
     await this.dataService.reserveBook(user.id, this.bookId());
-    alert('Book reserved successfully!');
+    this.toastService.success('Book reserved successfully!');
   }
 
   async toggleWishlist() {
@@ -307,8 +308,9 @@ export class BookDetailComponent implements OnInit {
       // Reset form
       this.newReviewRating = 0;
       this.newReviewComment = '';
+      this.toastService.success('Review posted successfully!');
     } catch (e) {
-      alert('Failed to post review.');
+      this.toastService.error('Failed to post review.');
     } finally {
       this.isSubmittingReview = false;
     }

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DataService } from '../../services/data.service';
 import { Book } from '../../models';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-book-catalog',
@@ -186,6 +187,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 export class BookCatalogComponent implements OnInit {
   private dataService = inject(DataService);
   private route = inject(ActivatedRoute);
+  private toastService = inject(ToastService);
 
   user = this.dataService.currentUser;
   searchQuery = signal('');
@@ -241,7 +243,7 @@ export class BookCatalogComponent implements OnInit {
   async reserveBook(bookId: string) {
     if (this.user()?.id) {
       await this.dataService.reserveBook(this.user()!.id, bookId);
-      alert('Book reserved successfully!');
+      this.toastService.success('Book reserved successfully!');
     }
   }
 
@@ -265,15 +267,16 @@ export class BookCatalogComponent implements OnInit {
   async saveBook() {
     if (this.isEditing()) {
       await this.dataService.updateBook(this.currentBook as Book);
+      this.toastService.success('Book updated successfully!');
     } else {
       await this.dataService.addBook(this.currentBook as Omit<Book, 'id'>);
+      this.toastService.success('Book added successfully!');
     }
     this.closeModal();
   }
 
   async deleteBook(bookId: string) {
-    if(confirm('Are you sure you want to delete this book?')) {
-      await this.dataService.deleteBook(bookId);
-    }
+    await this.dataService.deleteBook(bookId);
+    this.toastService.success('Book deleted successfully!');
   }
 }

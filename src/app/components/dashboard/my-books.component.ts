@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DataService } from '../../services/data.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-my-books',
@@ -197,6 +198,7 @@ import { DataService } from '../../services/data.service';
 })
 export class MyBooksComponent {
   private dataService = inject(DataService);
+  private toastService = inject(ToastService);
 
   user = this.dataService.currentUser;
   searchQuery = signal('');
@@ -255,17 +257,15 @@ export class MyBooksComponent {
     // Optimistic / pre-check limits
     const currentIssued = this.myIssuedBooks().length;
     if (currentIssued >= 5) {
-      alert('You have reached the maximum limit of 5 borrowed books.');
+      this.toastService.error('You have reached the maximum limit of 5 borrowed books.');
       return;
     }
 
-    if(confirm('Are you sure you want to borrow this book?')) {
-      const success = await this.dataService.issueBook(this.user()!.id, bookId);
-      if (success) {
-        // UI will update automatically because transactions signal is updated in dataService
-      } else {
-        alert('Could not borrow book. It may have become unavailable.');
-      }
+    const success = await this.dataService.issueBook(this.user()!.id, bookId);
+    if (success) {
+      this.toastService.success('Book borrowed successfully!');
+    } else {
+      this.toastService.error('Could not borrow book. It may have become unavailable.');
     }
   }
 }

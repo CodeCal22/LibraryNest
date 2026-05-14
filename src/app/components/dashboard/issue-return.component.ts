@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../../services/data.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-issue-return',
@@ -107,6 +108,7 @@ import { DataService } from '../../services/data.service';
 })
 export class IssueReturnComponent {
   private dataService = inject(DataService);
+  private toastService = inject(ToastService);
 
   issueMemberId = '';
   issueBookId = '';
@@ -139,11 +141,11 @@ export class IssueReturnComponent {
   async issueBook() {
     const success = await this.dataService.issueBook(this.issueMemberId, this.issueBookId);
     if (success) {
-      alert('Book issued successfully.');
+      this.toastService.success('Book issued successfully.');
       this.issueMemberId = '';
       this.issueBookId = '';
     } else {
-      alert('Failed to issue book. Check member limits or book availability.');
+      this.toastService.error('Failed to issue book. Check member limits or book availability.');
     }
   }
 
@@ -151,12 +153,10 @@ export class IssueReturnComponent {
     const tx = this.transactions().find(t => t.id === this.returnTransactionId);
     const success = await this.dataService.returnBook(this.returnTransactionId);
     if (success) {
-      // Reload logic is handled by service, we can't get fine amount from service return synchronously without changing type.
-      // Assuming return is successful.
-      alert('Book returned successfully.');
+      this.toastService.success('Book returned successfully.');
       this.returnTransactionId = '';
     } else {
-      alert('Failed to return book.');
+      this.toastService.error('Failed to return book.');
     }
   }
 }

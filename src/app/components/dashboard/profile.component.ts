@@ -43,8 +43,10 @@ type Tab = 'overview' | 'borrowed' | 'history' | 'reviews' | 'wishlist' | 'setti
             <span class="material-icons-outlined">star_rate</span> Reviews & Ratings
           </button>
           <button class="nav-btn" [class.active]="activeTab() === 'wishlist'" (click)="setTab('wishlist')">
-            <span class="material-icons-outlined">favorite_border</span> Wishlist
-            <span class="nav-count" *ngIf="myWishlist().length">{{ myWishlist().length }}</span>
+            <span class="material-icons-outlined">library_books</span> Reading List
+            <span class="nav-count" *ngIf="myWishlist().length || borrowedBooks().length || completedBooks().length">
+              {{ myWishlist().length + borrowedBooks().length + completedBooks().length }}
+            </span>
           </button>
           <button class="nav-btn" [class.active]="activeTab() === 'settings'" (click)="setTab('settings')" *ngIf="isCurrentUser()">
             <span class="material-icons-outlined">settings</span> Settings
@@ -235,28 +237,78 @@ type Tab = 'overview' | 'borrowed' | 'history' | 'reviews' | 'wishlist' | 'setti
           </ng-template>
         </div>
 
-        <!-- WISHLIST TAB -->
+        <!-- READING LIST TAB -->
         <div *ngIf="activeTab() === 'wishlist'" class="tab-pane animate-fade-in">
-          <h3 class="mb-6">Wishlist</h3>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-6" *ngIf="myWishlist().length; else noWishlist">
-            <div class="card book-card glass p-0" *ngFor="let item of myWishlist()">
-              <div class="book-cover-mini cursor-pointer" [routerLink]="['/dashboard/books', item.book?.id]" [style.backgroundImage]="item.book?.imageUrl ? 'url(' + item.book?.imageUrl + ')' : ''" [style.backgroundSize]="'cover'" [style.backgroundPosition]="'center'" style="height: 120px; border-radius: 0.5rem 0.5rem 0 0;">
-                <span *ngIf="!item.book?.imageUrl" class="material-icons-outlined">favorite</span>
-              </div>
-              <div class="p-4 flex flex-col flex-1">
-                <a [routerLink]="['/dashboard/books', item.book?.id]" class="text-main no-underline hover:text-primary">
-                  <h4 class="text-sm mb-1 line-clamp-2">{{ item.book?.title }}</h4>
-                </a>
-                <p class="text-xs text-muted mb-4">{{ item.book?.author }}</p>
-                <div class="mt-auto flex justify-between items-center">
-                  <button class="btn btn-primary btn-sm w-full" [routerLink]="['/dashboard/books', item.book?.id]">View Book</button>
+          <h3 class="mb-6">Reading List</h3>
+          
+          <div class="mb-8">
+            <h4 class="mb-4 text-primary flex items-center gap-2">
+              <span class="material-icons-outlined">menu_book</span> Currently Reading
+            </h4>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6" *ngIf="borrowedBooks().length; else noReading">
+              <div class="card book-card glass p-0" *ngFor="let item of borrowedBooks()">
+                <div class="book-cover-mini cursor-pointer" [routerLink]="['/dashboard/books', item.book?.id]" [style.backgroundImage]="item.book?.imageUrl ? 'url(' + item.book?.imageUrl + ')' : ''" [style.backgroundSize]="'cover'" [style.backgroundPosition]="'center'" style="height: 120px; border-radius: 0.5rem 0.5rem 0 0;">
+                  <span *ngIf="!item.book?.imageUrl" class="material-icons-outlined">menu_book</span>
+                </div>
+                <div class="p-4 flex flex-col flex-1">
+                  <a [routerLink]="['/dashboard/books', item.book?.id]" class="text-main no-underline hover:text-primary">
+                    <h4 class="text-sm mb-1 line-clamp-2">{{ item.book?.title }}</h4>
+                  </a>
+                  <p class="text-xs text-muted mb-4">{{ item.book?.author }}</p>
+                  <div class="mt-auto">
+                    <span class="badge badge-success text-xs">Reading</span>
+                  </div>
                 </div>
               </div>
             </div>
+            <ng-template #noReading><p class="text-muted text-sm">Not currently reading any books.</p></ng-template>
           </div>
-          <ng-template #noWishlist>
-            <p class="text-muted">No books in wishlist.</p>
-          </ng-template>
+
+          <div class="mb-8">
+            <h4 class="mb-4 text-warning flex items-center gap-2">
+              <span class="material-icons-outlined">bookmark</span> Planning to Read
+            </h4>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6" *ngIf="myWishlist().length; else noWishlist">
+              <div class="card book-card glass p-0" *ngFor="let item of myWishlist()">
+                <div class="book-cover-mini cursor-pointer" [routerLink]="['/dashboard/books', item.book?.id]" [style.backgroundImage]="item.book?.imageUrl ? 'url(' + item.book?.imageUrl + ')' : ''" [style.backgroundSize]="'cover'" [style.backgroundPosition]="'center'" style="height: 120px; border-radius: 0.5rem 0.5rem 0 0;">
+                  <span *ngIf="!item.book?.imageUrl" class="material-icons-outlined">bookmark</span>
+                </div>
+                <div class="p-4 flex flex-col flex-1">
+                  <a [routerLink]="['/dashboard/books', item.book?.id]" class="text-main no-underline hover:text-primary">
+                    <h4 class="text-sm mb-1 line-clamp-2">{{ item.book?.title }}</h4>
+                  </a>
+                  <p class="text-xs text-muted mb-4">{{ item.book?.author }}</p>
+                  <div class="mt-auto">
+                    <button class="btn btn-primary btn-sm w-full" [routerLink]="['/dashboard/books', item.book?.id]">View Book</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-template #noWishlist><p class="text-muted text-sm">No books planned to read.</p></ng-template>
+          </div>
+
+          <div>
+            <h4 class="mb-4 text-success flex items-center gap-2">
+              <span class="material-icons-outlined">task_alt</span> Completed
+            </h4>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6" *ngIf="completedBooks().length; else noCompleted">
+              <div class="card book-card glass p-0" *ngFor="let book of completedBooks()">
+                <div class="book-cover-mini cursor-pointer" [routerLink]="['/dashboard/books', book?.id]" [style.backgroundImage]="book?.imageUrl ? 'url(' + book?.imageUrl + ')' : ''" [style.backgroundSize]="'cover'" [style.backgroundPosition]="'center'" style="height: 120px; border-radius: 0.5rem 0.5rem 0 0;">
+                  <span *ngIf="!book?.imageUrl" class="material-icons-outlined">task_alt</span>
+                </div>
+                <div class="p-4 flex flex-col flex-1">
+                  <a [routerLink]="['/dashboard/books', book?.id]" class="text-main no-underline hover:text-primary">
+                    <h4 class="text-sm mb-1 line-clamp-2">{{ book?.title }}</h4>
+                  </a>
+                  <p class="text-xs text-muted mb-4">{{ book?.author }}</p>
+                  <div class="mt-auto">
+                    <span class="text-xs text-success flex items-center gap-1"><span class="material-icons-outlined" style="font-size:14px;">check</span> Read</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-template #noCompleted><p class="text-muted text-sm">No books completed yet.</p></ng-template>
+          </div>
         </div>
 
         <!-- SETTINGS TAB -->
@@ -641,6 +693,17 @@ export class ProfileComponent implements OnInit {
     return this.dataService.wishlist().filter(w => w.memberId === userId).map(w => {
       return { ...w, book: this.dataService.books().find(b => b.id === w.bookId) };
     });
+  });
+
+  completedBooks = computed(() => {
+    const userId = this.user?.id;
+    if (!userId) return [];
+    
+    // Get unique books from returned transactions
+    const returnedTxs = this.dataService.transactions().filter(t => t.memberId === userId && t.status === 'Returned');
+    const bookIds = Array.from(new Set(returnedTxs.map(t => t.bookId)));
+    
+    return bookIds.map(id => this.dataService.books().find(b => b.id === id)).filter(b => !!b);
   });
 
   myNotifications = computed(() => this.dataService.myNotifications());

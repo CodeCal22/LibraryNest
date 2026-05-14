@@ -9,6 +9,7 @@ import { SignupComponent } from './components/signup/signup.component';
 import { ProfileComponent } from './components/dashboard/profile.component';
 import { MyBooksComponent } from './components/dashboard/my-books.component';
 import { BookDetailComponent } from './components/dashboard/book-detail.component';
+import { LeaderboardComponent } from './components/dashboard/leaderboard.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -27,6 +28,7 @@ export const routes: Routes = [
       { path: 'my-books', component: MyBooksComponent },
       { path: 'profile', component: ProfileComponent },
       { path: 'profile/:id', component: ProfileComponent },
+      { path: 'leaderboard', component: LeaderboardComponent },
     ]
   },
   { path: '**', redirectTo: '/login' }

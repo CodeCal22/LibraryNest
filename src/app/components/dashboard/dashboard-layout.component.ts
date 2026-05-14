@@ -26,6 +26,10 @@ import { DataService } from '../../services/data.service';
             Catalog
           </a>
 
+          <a routerLink="/dashboard/leaderboard" routerLinkActive="active" class="nav-item">
+            Leaderboard
+          </a>
+
           <a *ngIf="isLibrarianOrAdmin()" routerLink="/dashboard/members" routerLinkActive="active" class="nav-item">
             Members
           </a>

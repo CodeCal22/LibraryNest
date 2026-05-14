@@ -14,8 +14,8 @@ import { DataService } from '../../services/data.service';
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10" *ngIf="myIssuedBooks().length > 0; else noBooks">
         <div *ngFor="let item of myIssuedBooks()" class="card glass flex items-start gap-4 relative" [ngClass]="{'border-error': item.isOverdue}">
-          <div class="book-cover-small cursor-pointer" [routerLink]="['/dashboard/books', item.book?.id]">
-             <span class="material-icons-outlined">menu_book</span>
+          <div class="book-cover-small cursor-pointer" [routerLink]="['/dashboard/books', item.book?.id]" [style.backgroundImage]="item.book?.imageUrl ? 'url(' + item.book?.imageUrl + ')' : ''" [style.backgroundSize]="'cover'" [style.backgroundPosition]="'center'">
+             <span *ngIf="!item.book?.imageUrl" class="material-icons-outlined">menu_book</span>
           </div>
           <div class="flex-1 min-w-0">
             <a [routerLink]="['/dashboard/books', item.book?.id]" class="text-main no-underline hover:text-primary">
@@ -63,8 +63,8 @@ import { DataService } from '../../services/data.service';
 
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <div class="card book-card" *ngFor="let book of filteredAvailableBooks()">
-          <div class="book-cover cursor-pointer" [routerLink]="['/dashboard/books', book.id]">
-            <span class="material-icons-outlined">book</span>
+          <div class="book-cover cursor-pointer" [routerLink]="['/dashboard/books', book.id]" [style.backgroundImage]="book.imageUrl ? 'url(' + book.imageUrl + ')' : ''" [style.backgroundSize]="'cover'" [style.backgroundPosition]="'center'">
+            <span *ngIf="!book.imageUrl" class="material-icons-outlined">book</span>
           </div>
           <div class="book-info">
             <a [routerLink]="['/dashboard/books', book.id]" class="text-main no-underline hover:text-primary">

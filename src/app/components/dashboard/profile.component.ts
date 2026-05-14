@@ -297,15 +297,23 @@ type Tab = 'overview' | 'borrowed' | 'history' | 'reviews' | 'wishlist' | 'setti
                 </div>
               </div>
 
-              <h4 class="mb-4 text-primary border-b border-color pb-2 mt-8">Preferences</h4>
+              <h4 class="mb-4 text-primary border-b border-color pb-2 mt-8">Notification Preferences</h4>
               <div class="flex flex-col gap-3 mb-8">
                 <label class="flex items-center gap-3 cursor-pointer">
-                  <input type="checkbox" checked class="accent-primary">
+                  <input type="checkbox" name="prefNewBooks" [(ngModel)]="editPrefs.newBooks" class="accent-primary">
+                  <span>New book availability alerts</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" name="prefDueDates" [(ngModel)]="editPrefs.dueDates" class="accent-primary">
                   <span>Email notifications for due dates</span>
                 </label>
                 <label class="flex items-center gap-3 cursor-pointer">
-                  <input type="checkbox" checked class="accent-primary">
-                  <span>New book availability alerts</span>
+                  <input type="checkbox" name="prefReservations" [(ngModel)]="editPrefs.reservations" class="accent-primary">
+                  <span>Reserved book available alerts</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" name="prefOverdue" [(ngModel)]="editPrefs.overdue" class="accent-primary">
+                  <span>Overdue fines and reminders</span>
                 </label>
               </div>
 
@@ -513,12 +521,24 @@ export class ProfileComponent implements OnInit {
   activeTab = signal<Tab>('overview');
   historySearch = '';
 
-  // Settings form
   editUser: any = {};
   editPassword = '';
   message = '';
   isError = false;
   isLoading = false;
+
+  editPrefs = {
+    newBooks: true,
+    dueDates: true,
+    reservations: true,
+    overdue: true
+  };
+  prefs = signal({
+    newBooks: true,
+    dueDates: true,
+    reservations: true,
+    overdue: true
+  });
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -535,6 +555,14 @@ export class ProfileComponent implements OnInit {
       }
       if (this.user) {
         this.editUser = { ...this.user };
+        const savedPrefs = localStorage.getItem('lexora-prefs-' + this.user.id);
+        if (savedPrefs) {
+          try {
+            const p = JSON.parse(savedPrefs);
+            this.editPrefs = { ...p };
+            this.prefs.set({ ...p });
+          } catch(e) {}
+        }
       }
     });
   }
@@ -615,25 +643,7 @@ export class ProfileComponent implements OnInit {
     });
   });
 
-  myNotifications = computed(() => {
-    const userId = this.user?.id;
-    if (!userId) return [];
-    
-    const notifs: any[] = [];
-    const today = new Date();
-    today.setHours(0,0,0,0);
-
-    // Check overdue books
-    this.borrowedBooks().forEach(item => {
-      if (item.isOverdue) {
-        notifs.push({ type: 'warning', icon: 'timer', message: `Your borrowed book "${item.book?.title}" is overdue by ${item.remainingDays * -1} days!`, time: 'Action Required' });
-      } else if (item.remainingDays <= 2) {
-        notifs.push({ type: 'info', icon: 'timer', message: `Your borrowed book "${item.book?.title}" is due in ${item.remainingDays} days.`, time: 'Upcoming' });
-      }
-    });
-
-    return notifs;
-  });
+  myNotifications = computed(() => this.dataService.myNotifications());
 
   async saveSettings() {
     this.message = '';
@@ -651,6 +661,9 @@ export class ProfileComponent implements OnInit {
       await this.dataService.updateMember(updatedUser);
       this.dataService.currentUser.set(updatedUser);
       this.user = updatedUser;
+      
+      this.prefs.set({ ...this.editPrefs });
+      localStorage.setItem('lexora-prefs-' + this.user.id, JSON.stringify(this.editPrefs));
       
       this.message = 'Profile settings updated successfully.';
       this.isError = false;

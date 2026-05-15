@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Premium Library Management System Styles */
 :root {
   /* Light Mode Palette */
@@ -16,6 +20,8 @@
   /* Accents */
   --accent-primary: #D4AF37;
   --accent-secondary: #B45309;
+  --primary: var(--accent-primary);
+  --secondary: var(--accent-secondary);
   --accent-gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   --accent-gradient-hover: linear-gradient(135deg, #FCD34D, #D97706);
   
